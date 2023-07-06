@@ -12,7 +12,7 @@ resource "aws_apigatewayv2_api" "api" {
   protocol_type = var.type
 
   dynamic "cors_configuration" {
-    for_each = vars.cors != null ? [1] : []
+    for_each = var.cors != null ? [1] : []
     content {
       allow_headers = var.cors.allow_headers
       allow_methods = var.cors.allow_methods
