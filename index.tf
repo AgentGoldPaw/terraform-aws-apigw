@@ -7,6 +7,19 @@ terraform {
   }
 }
 
+resource "aws_apigatewayv2_authorizer" "api_authorizer" {
+  api_id           = aws_apigatewayv2_api.api.id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+  name             = "api-authorizer"
+
+  jwt_configuration {
+    audience =[var.authorizer.audience]
+    issuer   = var.authorizer.issuer
+  }
+}
+
+
 resource "aws_apigatewayv2_api" "api" {
   name          = var.name
   protocol_type = var.type
