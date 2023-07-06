@@ -31,7 +31,7 @@ resource "aws_apigatewayv2_api" "api" {
       allow_methods = var.cors.allow_methods
       allow_origins = var.cors.allow_origins
       max_age       = var.cors.max_age
-      expose_headers = vars.cors.expose_headers
+      expose_headers = var.cors.expose_headers
     }
   }
 }
