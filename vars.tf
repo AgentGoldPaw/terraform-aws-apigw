@@ -4,7 +4,7 @@ variable "name" {
 
 variable "cors" {
   type = object({
-    allow_origin      = list(string)
+    allow_origins     = list(string)
     allow_headers     = list(string)
     allow_methods     = list(string)
     allow_credentials = bool
