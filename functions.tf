@@ -1,10 +1,8 @@
 module "functions" {
     count = var.functions != null ? length(var.functions) : 0
-    source = "git@github.com:MayorMunroe/vikingsonLambda.git"
+    source = "RedMunroe/lambda/aws"
     filename = var.functions[count.index].function.filename
     name = var.functions[count.index].function.name
-    app_code = var.functions[count.index].function.app_code
-    role_code = var.functions[count.index].function.role_code
     permissions = var.functions[count.index].permissions
     handler = var.functions[count.index].function.handler
     runtime = var.functions[count.index].function.runtime
