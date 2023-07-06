@@ -5,11 +5,11 @@ module "functions" {
     name = var.functions[count.index].function.name
     permissions = var.functions[count.index].permissions
     handler = var.functions[count.index].function.handler
+    environment = var.functions[count.index].function.environment
     runtime = var.functions[count.index].function.runtime
     timeout = var.functions[count.index].function.timeout
     memory_size = var.functions[count.index].function.memory_size
     source_code_hash = var.functions[count.index].function.source_code_hash
-    environment = merge({"environment" = var.functions[count.index].environment}, var.functions[count.index].function.environment)
     tracing_config = var.functions[count.index].function.tracing_config
     function_type = "APIGW"
 }
