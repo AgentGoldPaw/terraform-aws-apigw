@@ -8,6 +8,7 @@ variable "cors" {
     allow_headers     = list(string)
     allow_methods     = list(string)
     allow_credentials = bool
+    expose_headers = list(string)
     max_age           = number
   })
 
