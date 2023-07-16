@@ -2,13 +2,23 @@ variable "name" {
   type = string
 }
 
+variable "auth_type" {
+  type    = string
+  default = "JWT"
+}
+
+variable "api_key" {
+  type     = string
+  nullable = true
+}
+
 variable "cors" {
   type = object({
     allow_origins     = list(string)
     allow_headers     = list(string)
     allow_methods     = list(string)
     allow_credentials = bool
-    expose_headers = list(string)
+    expose_headers    = list(string)
     max_age           = number
   })
 
