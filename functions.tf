@@ -35,7 +35,7 @@ resource "aws_apigatewayv2_route" "route" {
   count              = length(aws_apigatewayv2_integration.integration)
   api_id             = aws_apigatewayv2_api.api.id
   authorization_type = "JWT"
-  authorizer_id      = var.auth_type == "JWT" ? aws_apigatewayv2_authorizer.api_authorizer.id : aws_apigatewayv2_authorizer.api_authorizer2.id
+  authorizer_id      = var.auth_type == "JWT" ? aws_apigatewayv2_authorizer.api_authorizer[0].id : aws_apigatewayv2_authorizer.api_authorizer2[0].id
   route_key          = "${var.functions[count.index].api.method} ${var.functions[count.index].api.route}"
   target             = "integrations/${aws_apigatewayv2_integration.integration[count.index].id}"
 }

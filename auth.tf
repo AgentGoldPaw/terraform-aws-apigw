@@ -39,7 +39,7 @@ module "auth_function" {
   source   = "RedMunroe/lambda/aws"
   filename = archive_file.code[0].output_path
   source_code_hash = archive_file.code[0].output_base64sha256
-  name     = "${var.name}-auth"
+  name     = "${replace(var.name, ".", "-")}-authorizer"
   permissions = jsonencode({
     Version = "2012-10-17"
     Statement = [

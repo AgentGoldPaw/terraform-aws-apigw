@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "authorizer_policy" {
     ]
     effect = "Allow"
     resources = [
-      module.auth_function.arn,
+      module.auth_function[0].arn,
     ]
   }
 }
