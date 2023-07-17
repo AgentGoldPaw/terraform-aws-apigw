@@ -3,7 +3,6 @@
 packaged/*
 node_modules
 **/node_modules/*
-dist
 # .tfstate files
 *.tfstate
 *.tfstate.*
