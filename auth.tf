@@ -12,7 +12,7 @@ resource "aws_secretsmanager_secret" "api_key" {
 
 resource "aws_secretsmanager_secret_version" "api_key" {
   count         = var.auth_type == "API_KEY" ? 1 : 0
-  secret_id     = aws_secretsmanager_secret.api_key.id
+  secret_id     = aws_secretsmanager_secret.api_key[0].id
   secret_string = var.api_key
 }
 
@@ -46,13 +46,13 @@ module "auth_function" {
       {
         Effect   = "Allow"
         Action   = ["secretsmanager:GetSecretValue"]
-        Resource = aws_secretsmanager_secret.api_key.arn
+        Resource = aws_secretsmanager_secret.api_key[0].arn
       },
     ]
   })
   handler = "index.handler"
   environment = {
-    SECRET_NAME    = aws_secretsmanager_secret.api_key.name
+    SECRET_NAME    = aws_secretsmanager_secret.api_key[0].name
     API_KEY_HEADER = "x-api-key"
   }
   runtime          = "nodejs16.x"
