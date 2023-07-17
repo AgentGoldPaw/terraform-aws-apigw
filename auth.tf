@@ -58,6 +58,6 @@ module "auth_function" {
   runtime          = "nodejs16.x"
   timeout          = 10
   memory_size      = 128
-  tracing_config   = var.functions[count.index].function.tracing_config
+  tracing_config   = true
   function_type    = "APIGW"
 }
