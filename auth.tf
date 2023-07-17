@@ -2,7 +2,7 @@ resource "archive_file" "code" {
   count       = var.auth_type == "API_KEY" ? 1 : 0
   type        = "zip"
   source_dir  = "./functions/auth"
-  output_path = "./packaged/${local.functions[count.index].name}.zip"
+  output_path = "./packaged/auth.zip"
 }
 
 resource "aws_secretsmanager_secret" "api_key" {
