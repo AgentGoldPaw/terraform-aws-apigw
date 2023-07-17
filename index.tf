@@ -26,8 +26,8 @@ resource "aws_apigatewayv2_authorizer" "api_authorizer2" {
   authorizer_type                   = "REQUEST"
   authorizer_credentials_arn        = aws_iam_role.authorizer_role[0].arn
   authorizer_uri                    = module.auth_function[0].invoke_arn
-  identity_sources                  = ["$request.header.API_KEY"]
   name                              = "API_KEY_AUTHORIZE"
+  enable_simple_responses = true
   authorizer_payload_format_version = "2.0"
 }
 

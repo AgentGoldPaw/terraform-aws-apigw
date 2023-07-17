@@ -1,8 +1,28 @@
-resource "archive_file" "code" {
+resource "null_resource" "lambda_dependencies" {
+  provisioner "local-exec" {
+    command = "cd ${local.auth_module} && npm install"
+  }
+
+  triggers = {
+    index = sha256(file("${local.auth_module}/dist/index.js"))
+    package = sha256(file("${local.auth_module}/package.json"))
+    lock = sha256(file("${local.auth_module}/package-lock.json"))
+    node = sha256(join("",fileset(local.auth_module, "dist/**/*.js")))
+  }
+}
+
+data "null_data_source" "wait_for_lambda_exporter" {
+  inputs = {
+    lambda_dependency_id = "${null_resource.lambda_dependencies.id}"
+    source_dir           = "${local.auth_module}"
+  }
+}
+
+data "archive_file" "lambda" {
   count       = var.auth_type == "API_KEY" ? 1 : 0
+  output_path = "${path.module}/packaged/auth.zip"
+  source_dir  = "${data.null_data_source.wait_for_lambda_exporter.outputs["source_dir"]}"
   type        = "zip"
-  source_dir  = "./functions/auth"
-  output_path = "./packaged/auth.zip"
 }
 
 resource "aws_secretsmanager_secret" "api_key" {
@@ -37,12 +57,17 @@ resource "aws_iam_role_policy_attachment" "authorizer_policy" {
 module "auth_function" {
   count    = var.auth_type == "API_KEY" ? 1 : 0
   source   = "RedMunroe/lambda/aws"
-  filename = archive_file.code[0].output_path
-  source_code_hash = archive_file.code[0].output_base64sha256
+  filename = data.archive_file.lambda[0].output_path
+  source_code_hash = data.archive_file.lambda[0].output_base64sha256
   name     = "${replace(var.name, ".", "-")}-authorizer"
   permissions = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]
+        Resource = "arn:aws:logs:*:*:*"
+      }, 
       {
         Effect   = "Allow"
         Action   = ["secretsmanager:GetSecretValue"]
@@ -50,7 +75,7 @@ module "auth_function" {
       },
     ]
   })
-  handler = "index.handler"
+  handler = "dist/index.handler"
   environment = {
     SECRET_NAME    = aws_secretsmanager_secret.api_key[0].name
     API_KEY_HEADER = "x-api-key"
