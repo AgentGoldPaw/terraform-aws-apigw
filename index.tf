@@ -24,7 +24,8 @@ resource "aws_apigatewayv2_authorizer" "api_authorizer2" {
   count                             = var.auth_type == "API_KEY" ? 1 : 0
   api_id                            = aws_apigatewayv2_api.api.id
   authorizer_type                   = "REQUEST"
-  authorizer_uri                    = aws_lambda_function.authorizer.invoke_arn
+  authorizer_credentials_arn        = aws_iam_role.authorizer_role[0].arn
+  authorizer_uri                    = module.auth_function[0].invoke_arn
   identity_sources                  = ["$request.header.API_KEY"]
   name                              = "API_KEY_AUTHORIZE"
   authorizer_payload_format_version = "2.0"
