@@ -8,17 +8,28 @@ terraform {
 }
 
 resource "aws_apigatewayv2_authorizer" "api_authorizer" {
+  count            = var.auth_type == "JWT" ? 1 : 0
   api_id           = aws_apigatewayv2_api.api.id
   authorizer_type  = "JWT"
   identity_sources = ["$request.header.Authorization"]
   name             = "api-authorizer"
 
   jwt_configuration {
-    audience =[var.authorizer.audience]
+    audience = [var.authorizer.audience]
     issuer   = var.authorizer.issuer
   }
 }
 
+resource "aws_apigatewayv2_authorizer" "api_authorizer2" {
+  count                             = var.auth_type == "API_KEY" ? 1 : 0
+  api_id                            = aws_apigatewayv2_api.api.id
+  authorizer_type                   = "REQUEST"
+  authorizer_credentials_arn        = aws_iam_role.authorizer_role[0].arn
+  authorizer_uri                    = module.auth_function[0].invoke_arn
+  identity_sources                  = ["$request.header.API_KEY"]
+  name                              = "API_KEY_AUTHORIZE"
+  authorizer_payload_format_version = "2.0"
+}
 
 resource "aws_apigatewayv2_api" "api" {
   name          = var.name
@@ -27,10 +38,10 @@ resource "aws_apigatewayv2_api" "api" {
   dynamic "cors_configuration" {
     for_each = var.cors != null ? [1] : []
     content {
-      allow_headers = var.cors.allow_headers
-      allow_methods = var.cors.allow_methods
-      allow_origins = var.cors.allow_origins
-      max_age       = var.cors.max_age
+      allow_headers  = var.cors.allow_headers
+      allow_methods  = var.cors.allow_methods
+      allow_origins  = var.cors.allow_origins
+      max_age        = var.cors.max_age
       expose_headers = var.cors.expose_headers
     }
   }
